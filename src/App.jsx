@@ -23,6 +23,29 @@ export default class App extends Component {
         }
       ]
     }
+    this.onEnter = this.onEnter.bind(this);
+  }
+
+  generateRandId() {
+    let randId = '';
+    const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    for (let i = 0; i < 6; i++) 
+      randId += possible.charAt(Math.floor(Math.random() * possible.length));
+    
+    return randId;
+  }
+
+  onEnter(event) {
+    const newMessage = 
+        [{
+          id: this.generateRandId(),
+          username: this.state.currentUser.name,
+          content: event.target.value
+        }]
+    const messages = this.state.messages.concat(newMessage)
+    if (event.key === 'Enter') {
+      this.setState({ messages: messages }, event.target.value='');
+    }
   }
 
   componentDidMount() {
@@ -44,7 +67,7 @@ export default class App extends Component {
         </nav>
   
         <MessageList messages={ this.state.messages } />
-        <ChatBar currentUser={ this.state.currentUser } />
+        <ChatBar currentUser={ this.state.currentUser } onEnter={ this.onEnter } />
   
       </div>
     );
