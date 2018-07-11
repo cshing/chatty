@@ -23,7 +23,7 @@ export default class App extends Component {
         }
       ]
     }
-    this.onEnter = this.onEnter.bind(this);
+    this.addMessage = this.addMessage.bind(this);
   }
 
   generateRandId() {
@@ -35,7 +35,7 @@ export default class App extends Component {
     return randId;
   }
 
-  onEnter(event) {
+  addMessage(event) {
     const newMessage = 
         [{
           id: this.generateRandId(),
@@ -67,7 +67,7 @@ export default class App extends Component {
         </nav>
   
         <MessageList messages={ this.state.messages } />
-        <ChatBar currentUser={ this.state.currentUser } onEnter={ this.onEnter } />
+        <ChatBar currentUser={ this.state.currentUser } addMessage={ this.addMessage } />
   
       </div>
     );
