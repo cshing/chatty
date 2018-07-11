@@ -37,14 +37,15 @@ export default class App extends Component {
 
   addMessage(event) {
     const newMessage = 
-        [{
+        {
           id: this.generateRandId(),
           username: this.state.currentUser.name,
           content: event.target.value
-        }]
-    const messages = this.state.messages.concat(newMessage)
+        }
+    // const messages = this.state.messages.concat(newMessage)
     if (event.key === 'Enter') {
-      this.setState({ messages: messages }, event.target.value='');
+      // this.setState({ messages: messages }, event.target.value='');
+      this.socket.send(JSON.stringify(newMessage));
     }
   }
 
@@ -60,6 +61,8 @@ export default class App extends Component {
 
     this.socket = new WebSocket('ws://localhost:3001'); //${window.location.host}
     console.log('Connected to server')
+
+
   }
 
   render () {
