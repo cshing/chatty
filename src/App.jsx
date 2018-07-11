@@ -12,40 +12,24 @@ export default class App extends Component {
       currentUser: {name: 'Bob'}, // optional. if currentUser is not defined, it means the user is Anonymous
       messages: [
         {
-          id: 'df3Rf5',
-          username: 'Bob',
-          content: 'Has anyone seen my marbles?',
+          id: '',
+          username: '',
+          content: '',
         },
-        {
-          id: 'ke97DF',
-          username: 'Anonymous',
-          content: 'No, I think you lost them. You lost your marbles Bob. You lost them for good.'
-        }
       ]
     }
     this.addMessage = this.addMessage.bind(this);
   }
 
-  generateRandId() {
-    let randId = '';
-    const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    for (let i = 0; i < 6; i++) 
-      randId += possible.charAt(Math.floor(Math.random() * possible.length));
-    
-    return randId;
-  }
-
   addMessage(event) {
     const newMessage = 
         {
-          id: this.generateRandId(),
           username: this.state.currentUser.name,
           content: event.target.value
         }
-    // const messages = this.state.messages.concat(newMessage)
+
     if (event.key === 'Enter') {
-      // this.setState({ messages: messages }, event.target.value='');
-      this.socket.send(JSON.stringify(newMessage));
+      this.socket.send(JSON.stringify(newMessage), event.target.value='');
     }
   }
 
@@ -62,7 +46,12 @@ export default class App extends Component {
     this.socket = new WebSocket('ws://localhost:3001'); //${window.location.host}
     console.log('Connected to server')
 
-
+    this.socket.onmessage = (event) => {
+      // code to handle incoming message
+      const message = JSON.parse(event.data);
+      const messages = this.state.messages.concat(message);
+      this.setState({ messages })
+    }
   }
 
   render () {
