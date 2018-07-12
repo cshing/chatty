@@ -4,33 +4,35 @@ import ChatBar from './ChatBar.jsx';
 import MessageList from './MessageList.jsx';
 
 export default class App extends Component {
-  //constructor, super, this.state
   constructor(props) {
     super(props);
 
     this.state = {
-      currentUser: {name: 'Bob'}, // optional. if currentUser is not defined, it means the user is Anonymous
+      currentUser: {name: ''}, // optional. if currentUser is not defined, it means the user is Anonymous
       messages: [
-        {
-          id: '',
-          username: '',
-          content: '',
-        },
+        // {
+        //   id: '',
+        //   username: '',
+        //   content: '',
+        // },
       ]
     }
+    this.setUser = this.setUser.bind(this);
     this.addMessage = this.addMessage.bind(this);
   }
 
-  addMessage(event) {
+  setUser(newUser) {
+    this.setState({currentUser: newUser})
+  }
+
+  addMessage(content) {
     const newMessage = 
         {
           username: this.state.currentUser.name,
-          content: event.target.value
+          content: content
         }
 
-    if (event.key === 'Enter') {
-      this.socket.send(JSON.stringify(newMessage), event.target.value='');
-    }
+      this.socket.send(JSON.stringify(newMessage));
   }
 
   componentDidMount() {
@@ -40,10 +42,10 @@ export default class App extends Component {
       const messages = this.state.messages.concat(newMessage)
       // Update the state of the app component.
       // Calling setState will trigger a call to render() in App and all child components.
-      this.setState({messages: messages})
+      this.setState({ messages })
     }, 3000);
 
-    this.socket = new WebSocket('ws://localhost:3001'); //${window.location.host}
+    this.socket = new WebSocket('ws://localhost:3001'); 
     console.log('Connected to server')
 
     this.socket.onmessage = (event) => {
@@ -62,7 +64,7 @@ export default class App extends Component {
         </nav>
   
         <MessageList messages={ this.state.messages } />
-        <ChatBar currentUser={ this.state.currentUser } addMessage={ this.addMessage } />
+        <ChatBar currentUser={ this.state.currentUser } setUser={ this.setUser } addMessage={ this.addMessage } />
   
       </div>
     );
