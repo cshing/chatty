@@ -24,7 +24,7 @@ export default class App extends Component {
   }
 
   setUser(newUser) {
-    if (this.state.currentUser.name === '' || this.state.currentUser.name === newUser) {
+    if (this.state.currentUser.name === '' || this.state.currentUser.name === newUser.name) {
       this.setState({currentUser: newUser})
     } else {
       const newNotification = {
@@ -99,7 +99,7 @@ export default class App extends Component {
       <div>
         <nav className="navbar">
           <a href="/" className="navbar-brand">Chatty</a>
-          <span className="userCount"> {this.state.userCount} user(s) online</span>
+          <span className="navbar-userCount"> {this.state.userCount} user(s) online</span>
         </nav>
   
         <MessageList messages={ this.state.messages } notification={ this.state.notification }  />
