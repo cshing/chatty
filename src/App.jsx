@@ -16,14 +16,15 @@ export default class App extends Component {
         //   content: '',
         // },
       ],
-      notification: ''
+      notification: '',
+      userCount: ''
     }
     this.setUser = this.setUser.bind(this);
     this.addMessage = this.addMessage.bind(this);
   }
 
   setUser(newUser) {
-    if (this.state.currentUser.name === '') {
+    if (this.state.currentUser.name === '' || this.state.currentUser.name === newUser) {
       this.setState({currentUser: newUser})
     } else {
       const newNotification = {
@@ -58,27 +59,34 @@ export default class App extends Component {
     console.log('Connected to server')
 
     this.socket.onmessage = (event) => {
-      console.log(event.data)
 
       const incomingData = JSON.parse(event.data);
       switch(incomingData.type) {
-        case 'incomingMessage':
-        // code to handle incoming message
-        const message = {
-          id: incomingData.id,
-          username: incomingData.username,
-          content: incomingData.content
+        case 'incomingMessage': {
+          // code to handle incoming message
+          const message = {
+            id: incomingData.id,
+            username: incomingData.username,
+            content: incomingData.content
+          }
+          const messages = this.state.messages.concat(message);
+          this.setState({ messages })
+          break;
         }
-        const messages = this.state.messages.concat(message);
-        this.setState({ messages })
-        break;
 
-        case 'incomingNotification':
-        // code to handle incoming notification
-        const notification = incomingData.content;
-        this.setState({ notification })
-        break;
+        case 'incomingNotification': {
+          // code to handle incoming notification
+          const notification = incomingData.content;
+          this.setState({ notification })
+          break;
+        }
 
+        case 'incomingCount': {
+          const userCount = incomingData.userCount;
+          this.setState({ userCount })
+          break;
+        }
+        
         default:
         // show an error in the console if the message type is unknown
         throw new Error('Unknown event type ' + incomingData.type);
@@ -91,6 +99,7 @@ export default class App extends Component {
       <div>
         <nav className="navbar">
           <a href="/" className="navbar-brand">Chatty</a>
+          <span className="userCount"> {this.state.userCount} user(s) online</span>
         </nav>
   
         <MessageList messages={ this.state.messages } notification={ this.state.notification }  />
