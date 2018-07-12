@@ -45,7 +45,7 @@ export default class App extends Component {
       this.setState({ messages })
     }, 3000);
 
-    this.socket = new WebSocket('ws://localhost:3001'); 
+    this.socket = new WebSocket(`ws://${window.location.hostname}:3001`); 
     console.log('Connected to server')
 
     this.socket.onmessage = (event) => {
