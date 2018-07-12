@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
+import autoscroll from 'autoscroll-react'
 import Message from './Message.jsx';
 
-export default class MessageList extends Component {
+class MessageList extends Component {
     render() {
         const messages = this.props.messages.map(message => {
             return <Message 
@@ -17,3 +18,5 @@ export default class MessageList extends Component {
         );
     }
 }
+
+export default autoscroll(MessageList)
