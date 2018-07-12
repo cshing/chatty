@@ -15,23 +15,32 @@ export default class App extends Component {
         //   username: '',
         //   content: '',
         // },
-      ]
+      ],
+      notification: ''
     }
     this.setUser = this.setUser.bind(this);
     this.addMessage = this.addMessage.bind(this);
   }
 
   setUser(newUser) {
-    this.setState({currentUser: newUser})
+    if (this.state.currentUser.name === '') {
+      this.setState({currentUser: newUser})
+    } else {
+      const newNotification = {
+        type: 'postNotification',
+        content: `${this.state.currentUser.name} has changed their name to ${newUser.name}.`
+      }
+      this.socket.send(JSON.stringify(newNotification));
+      this.setState({currentUser: newUser})
+    }
   }
 
   addMessage(content) {
-    const newMessage = 
-        {
-          username: this.state.currentUser.name,
-          content: content
-        }
-
+    const newMessage = {
+      type: 'postMessage',
+      username: this.state.currentUser.name,
+      content: content
+    }
       this.socket.send(JSON.stringify(newMessage));
   }
 
@@ -49,10 +58,31 @@ export default class App extends Component {
     console.log('Connected to server')
 
     this.socket.onmessage = (event) => {
-      // code to handle incoming message
-      const message = JSON.parse(event.data);
-      const messages = this.state.messages.concat(message);
-      this.setState({ messages })
+      console.log(event.data)
+
+      const incomingData = JSON.parse(event.data);
+      switch(incomingData.type) {
+        case 'incomingMessage':
+        // code to handle incoming message
+        const message = {
+          id: incomingData.id,
+          username: incomingData.username,
+          content: incomingData.content
+        }
+        const messages = this.state.messages.concat(message);
+        this.setState({ messages })
+        break;
+
+        case 'incomingNotification':
+        // code to handle incoming notification
+        const notification = incomingData.content;
+        this.setState({ notification })
+        break;
+
+        default:
+        // show an error in the console if the message type is unknown
+        throw new Error('Unknown event type ' + incomingData.type);
+      }
     }
   }
 
@@ -63,7 +93,7 @@ export default class App extends Component {
           <a href="/" className="navbar-brand">Chatty</a>
         </nav>
   
-        <MessageList messages={ this.state.messages } />
+        <MessageList messages={ this.state.messages } notification={ this.state.notification }  />
         <ChatBar currentUser={ this.state.currentUser } setUser={ this.setUser } addMessage={ this.addMessage } />
   
       </div>

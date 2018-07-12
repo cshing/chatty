@@ -14,6 +14,7 @@ class MessageList extends Component {
         return (
             <main className="messages">
                 { messages }
+                { this.props.notification }
             </main>
         );
     }

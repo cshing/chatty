@@ -30,17 +30,35 @@ wss.on('connection', (ws) => {
   console.log('Client connected');
 
   ws.on('message', (data) => {
-    const message = JSON.parse(data);
-    message.id = uuid();
-    console.log(`${message.id} - User ${message.username} said ${message.content}`);
-    wss.broadcast(JSON.stringify(message));
+    const incomingData = JSON.parse(data);
 
-    // Broadcast to everyone else except me.
-    // wss.clients.forEach((client) => {
-    //   if (client !== ws && client.readyState === WS.OPEN) {
-    //     client.send(JSON.stringify(message));
-    //   }
-    // })
+    switch(incomingData.type) {
+      case 'postMessage':
+      // code to handle postMessage
+      const message = {
+        type: 'incomingMessage',
+        id: uuid(),
+        username: incomingData.username,
+        content: incomingData.content
+      }
+      console.log(`${message.id} - User ${message.username} said ${message.content}`);
+      wss.broadcast(JSON.stringify(message));
+      break;
+
+      case 'postNotification':
+      // code to handle postNotification
+      const notification = {
+        type: 'incomingNotification',
+        content: incomingData.content
+      }
+      console.log(`Notification: ${notification.content}`);
+      wss.broadcast(JSON.stringify(notification));
+      break;
+
+      default:
+      // show an error in the console if the message type is unknown
+      throw new Error('Unknown event type ' + incomingData.type);
+    }
   });
 
   // Set up a callback for when a client closes the socket. This usually means they closed their browser.
