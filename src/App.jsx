@@ -16,7 +16,7 @@ export default class App extends Component {
         //   content: '',
         // },
       ],
-      notification: '',
+      // notification: '',
       userCount: ''
     }
     this.setUser = this.setUser.bind(this);
@@ -29,7 +29,7 @@ export default class App extends Component {
     } else {
       const newNotification = {
         type: 'postNotification',
-        content: `${this.state.currentUser.name} has changed their name to ${newUser.name}.`
+        notification: `${this.state.currentUser.name} has changed their name to ${newUser.name}.`
       }
       this.socket.send(JSON.stringify(newNotification));
       this.setState({currentUser: newUser})
@@ -68,7 +68,7 @@ export default class App extends Component {
             id: incomingData.id,
             username: incomingData.username,
             content: incomingData.content
-          }
+          };
           const messages = this.state.messages.concat(message);
           this.setState({ messages })
           break;
@@ -76,8 +76,13 @@ export default class App extends Component {
 
         case 'incomingNotification': {
           // code to handle incoming notification
-          const notification = incomingData.content;
-          this.setState({ notification })
+          const notification = {
+            id: incomingData.id,
+            username: incomingData.username,
+            notification: incomingData.notification
+          };
+          const messages = this.state.messages.concat(notification);
+          this.setState({ messages })
           break;
         }
 
@@ -102,7 +107,7 @@ export default class App extends Component {
           <span className="navbar-userCount"> {this.state.userCount} user(s) online</span>
         </nav>
   
-        <MessageList messages={ this.state.messages } notification={ this.state.notification }  />
+        <MessageList messages={ this.state.messages } />
         <ChatBar currentUser={ this.state.currentUser } setUser={ this.setUser } addMessage={ this.addMessage } />
   
       </div>

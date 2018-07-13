@@ -57,9 +57,11 @@ wss.on('connection', (ws) => {
         // code to handle postNotification
         const notification = {
           type: 'incomingNotification',
-          content: incomingData.content
+          id: uuid(),
+          username: '',
+          notification: incomingData.notification
         }
-        console.log(`Notification: ${notification.content}`);
+        console.log(`Notification: ${notification.notification}`);
         wss.broadcast(JSON.stringify(notification));
         break;
       }
