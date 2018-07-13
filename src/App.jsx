@@ -9,18 +9,20 @@ export default class App extends Component {
 
     this.state = {
       currentUser: {name: ''}, // optional. if currentUser is not defined, it means the user is Anonymous
-      messages: [
-        // {
-        //   id: '',
-        //   username: '',
-        //   content: '',
-        // },
-      ],
-      // notification: '',
+      messages: [],
       userCount: ''
     }
-    this.setUser = this.setUser.bind(this);
     this.addMessage = this.addMessage.bind(this);
+    this.setUser = this.setUser.bind(this);
+  }
+
+  addMessage(content) {
+    const newMessage = {
+      type: 'postMessage',
+      username: this.state.currentUser.name,
+      content: content
+    }
+      this.socket.send(JSON.stringify(newMessage));
   }
 
   setUser(newUser) {
@@ -34,15 +36,6 @@ export default class App extends Component {
       this.socket.send(JSON.stringify(newNotification));
       this.setState({currentUser: newUser})
     }
-  }
-
-  addMessage(content) {
-    const newMessage = {
-      type: 'postMessage',
-      username: this.state.currentUser.name,
-      content: content
-    }
-      this.socket.send(JSON.stringify(newMessage));
   }
 
   componentDidMount() {
@@ -62,8 +55,8 @@ export default class App extends Component {
 
       const incomingData = JSON.parse(event.data);
       switch(incomingData.type) {
+        // code to handle incoming message
         case 'incomingMessage': {
-          // code to handle incoming message
           const message = {
             id: incomingData.id,
             username: incomingData.username,
@@ -74,8 +67,8 @@ export default class App extends Component {
           break;
         }
 
+        // code to handle incoming notification
         case 'incomingNotification': {
-          // code to handle incoming notification
           const notification = {
             id: incomingData.id,
             username: incomingData.username,
@@ -86,6 +79,7 @@ export default class App extends Component {
           break;
         }
 
+        // code to handle incoming userCount
         case 'incomingCount': {
           const userCount = incomingData.userCount;
           this.setState({ userCount })
@@ -107,9 +101,8 @@ export default class App extends Component {
           <span className="navbar-userCount"> {this.state.userCount} user(s) online</span>
         </nav>
   
-        <MessageList messages={ this.state.messages } />
+        <MessageList messages={ this.state.messages } /> 
         <ChatBar currentUser={ this.state.currentUser } setUser={ this.setUser } addMessage={ this.addMessage } />
-  
       </div>
     );
   }

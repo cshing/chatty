@@ -27,9 +27,9 @@ wss.broadcast = (data) => {
 // When a client connects they are assigned a socket, represented by
 // the ws parameter in the callback.
 wss.on('connection', (ws) => {
-  // console.log(wss.options.server._connections)
   console.log('Client connected');
   
+  // code to broadcast count of connections after a client connects
   const userCount = {
     type: 'incomingCount',
     userCount: wss.options.server._connections
@@ -40,34 +40,33 @@ wss.on('connection', (ws) => {
     const incomingData = JSON.parse(data);
 
     switch(incomingData.type) {
+
+      // code to handle postMessage
       case 'postMessage': {
-        // code to handle postMessage
         const message = {
           type: 'incomingMessage',
           id: uuid(),
           username: incomingData.username,
           content: incomingData.content
         }
-        console.log(`${message.id} - User ${message.username} said ${message.content}`);
         wss.broadcast(JSON.stringify(message));
         break;
       }
 
+      // code to handle postNotification
       case 'postNotification': {
-        // code to handle postNotification
         const notification = {
           type: 'incomingNotification',
           id: uuid(),
           username: '',
           notification: incomingData.notification
         }
-        console.log(`Notification: ${notification.notification}`);
         wss.broadcast(JSON.stringify(notification));
         break;
       }
 
-      default:
       // show an error in the console if the message type is unknown
+      default:
       throw new Error('Unknown event type ' + incomingData.type);
     }
   });
@@ -76,6 +75,7 @@ wss.on('connection', (ws) => {
   ws.on('close', () => {
     console.log('Client disconnected')
 
+    // code to broadcast count of connections after a client disconnects
     const userCount = {
       type: 'incomingCount',
       userCount: wss.options.server._connections
