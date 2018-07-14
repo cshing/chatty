@@ -10,7 +10,7 @@
 
 ## Final Product
 
-![Screenshot of Chatty main page with count of users](https://github.com/cshing/chatty/blob/master/docs/usercount-multiuser.png?raw=true)
+![Screenshot of Chatty main page with count of users](https://github.com/cshing/chatty/blob/master/docs/mainpage-userColor.png?raw=true)
 
 ## Dependencies
 
