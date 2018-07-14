@@ -10,7 +10,8 @@ export default class App extends Component {
     this.state = {
       currentUser: {name: ''}, // optional. if currentUser is not defined, it means the user is Anonymous
       messages: [],
-      userCount: ''
+      userCount: '',
+      userColor: ''
     }
     this.addMessage = this.addMessage.bind(this);
     this.setUser = this.setUser.bind(this);
@@ -48,19 +49,21 @@ export default class App extends Component {
       this.setState({ messages })
     }, 3000);
 
+    // Set up new websocket. Users under same WIFI network may enter same chatroom using my IP address
     this.socket = new WebSocket(`ws://${window.location.hostname}:3001`); 
     console.log('Connected to server')
 
     this.socket.onmessage = (event) => {
-
       const incomingData = JSON.parse(event.data);
+
       switch(incomingData.type) {
         // code to handle incoming message
         case 'incomingMessage': {
           const message = {
             id: incomingData.id,
             username: incomingData.username,
-            content: incomingData.content
+            content: incomingData.content,
+            userColor: incomingData.userColor
           };
           const messages = this.state.messages.concat(message);
           this.setState({ messages })
@@ -72,7 +75,8 @@ export default class App extends Component {
           const notification = {
             id: incomingData.id,
             username: incomingData.username,
-            notification: incomingData.notification
+            notification: incomingData.notification,
+            userColor: incomingData.userColor
           };
           const messages = this.state.messages.concat(notification);
           this.setState({ messages })
@@ -101,7 +105,7 @@ export default class App extends Component {
           <span className="navbar-userCount"> {this.state.userCount} user(s) online</span>
         </nav>
   
-        <MessageList messages={ this.state.messages } /> 
+        <MessageList messages={ this.state.messages } userColor={ this.state.userColor } /> 
         <ChatBar currentUser={ this.state.currentUser } setUser={ this.setUser } addMessage={ this.addMessage } />
       </div>
     );

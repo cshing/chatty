@@ -9,7 +9,8 @@ class MessageList extends Component {
                 key={ message.id }
                 username={ message.username }
                 content={ message.content }
-                notification={ message.notification} />
+                notification={ message.notification}
+                userColor={ message.userColor } />
         });
 
         return (
