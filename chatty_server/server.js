@@ -14,11 +14,20 @@ const server = express()
 // Create the WebSockets server
 const wss = new WS.Server({ server });
 
+// Colors assigned to users
+const colors = [
+  '#ff69b4', // hot pink
+  '#3498db', // peter river
+  '#8e44ad', // wisteria
+  '#e74c3c', // alizarin
+  '#1abc9c', // turquoise
+]
+
 // Broadcast to all.
 wss.broadcast = (data) => {
   wss.clients.forEach((client) => {
     if (client.readyState === WS.OPEN) {
-      client.send(data);
+      client.send(JSON.stringify(data));
     }
   });
 };
@@ -34,22 +43,25 @@ wss.on('connection', (ws) => {
     type: 'incomingCount',
     userCount: wss.options.server._connections
   }
-  wss.broadcast(JSON.stringify(userCount));
+  wss.broadcast(userCount);
+
+  // radom color assigned to user upon connection
+  const userColor = colors[Math.floor(Math.random() * colors.length)];
 
   ws.on('message', (data) => {
     const incomingData = JSON.parse(data);
 
     switch(incomingData.type) {
-
       // code to handle postMessage
       case 'postMessage': {
         const message = {
           type: 'incomingMessage',
           id: uuid(),
           username: incomingData.username,
-          content: incomingData.content
+          content: incomingData.content,
+          userColor: userColor
         }
-        wss.broadcast(JSON.stringify(message));
+        wss.broadcast(message);
         break;
       }
 
@@ -59,9 +71,10 @@ wss.on('connection', (ws) => {
           type: 'incomingNotification',
           id: uuid(),
           username: '',
-          notification: incomingData.notification
+          notification: incomingData.notification,
+          userColor: ''
         }
-        wss.broadcast(JSON.stringify(notification));
+        wss.broadcast(notification);
         break;
       }
 
@@ -80,6 +93,6 @@ wss.on('connection', (ws) => {
       type: 'incomingCount',
       userCount: wss.options.server._connections
     }
-    wss.broadcast(JSON.stringify(userCount));
+    wss.broadcast(userCount);
   });
 });
